@@ -1,0 +1,72 @@
+//! Holds ECC errors on the: 
+//! • L1 data RAMs.
+//! • L1 tag RAMs.
+//! • L1 dirty RAMs.
+//! • TLB RAMs.
+//! This register is used for recording ECC errors on all processor RAMs.
+
+use tock_registers::{
+    register_bitfields, 
+    interfaces::{Writeable, Readable}
+};
+
+register_bitfields! {u64,
+    /// CPU Memory Error Syndrome Register
+    pub CPUMERRSR_EL1 [
+        /// Fatal bit. This bit is set to 1 on the first memory error that 
+        /// caused a data abort. It is a sticky bit so that after it is set, 
+        /// it remains set until the register is written.
+        Fatal OFFSET(63) NUMBITS(1) [
+            InValid             = 0b0,
+            Valid               = 0b1
+        ],
+
+        /// This field is set to 0 on the first memory error and is incremented 
+        /// on any memory error that does not match the RAMID and Bank/Way 
+        /// information in this register while the sticky Valid bit is set.
+        OtherErrorCount OFFSET(40) NUMBITS(8) [],
+
+        /// This field is set to 0 on the first memory error and is incremented 
+        /// on any memory error that exactly matches the RAMID and Bank/Way 
+        /// information in this register while the sticky Valid bit is set.
+        RepeatErrorCount OFFSET(32) NUMBITS(8) [],
+
+        /// Valid bit. This bit is set to 1 on the first memory error.
+        Valid OFFSET(31) NUMBITS(1) [
+            InValid             = 0b0,
+            Valid               = 0b1
+        ],
+
+        /// RAM Identifier. Indicates the RAM in which the first memory error.
+        RAMID OFFSET(24) NUMBITS(7) [
+            L1InstructionTag    = 0x00,
+            L1InstructionData   = 0x01,
+            L1DataTag           = 0x08,
+            L1DataData          = 0x09,
+            L1DataDirty         = 0x0A,
+            TLB                 = 0x18
+        ],
+
+        /// Indicates the RAM where the first memory error occurred.
+        CPUIDWay OFFSET(18) NUMBITS(3) [],
+
+        /// Indicates the index address of the first memory error.
+        RAMAddress OFFSET(0) NUMBITS(12) []
+    ]
+}
+
+pub struct Reg;
+
+impl Readable for Reg {
+    type T = u64;
+    type R = CPUMERRSR_EL1::Register;
+    sys_register_read_raw!(u64, "S3_1_C15_C2_2", "x");
+}
+
+impl Writeable for Reg {
+    type T = u64;
+    type R = CPUMERRSR_EL1::Register;
+    sys_register_write_raw!(u64, "S3_1_C15_C2_2", "x");
+}
+
+pub const CPUMERRSR_EL1: Reg = Reg {};

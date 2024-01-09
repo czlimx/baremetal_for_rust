@@ -1,0 +1,11 @@
+[build]
+
+[target.aarch64-unknown-none]
+rustflags = [
+    "-Clink-arg=-Tlinks/aarch64.lds",
+    "-Clink-args=-nostdlib -z nodefaultlib",
+    "-Clink-args=-Map=target/aarch64-unknown-none/debug/demo.map",
+    "-C", "target-cpu=generic",
+    "-C", "soft-float=no",
+    "-D", "warnings"
+]

@@ -1,0 +1,31 @@
+//! Holds the faulting IPA for some aborts on a stage 2 translation taken to 
+//! EL2.
+
+use tock_registers::{
+    register_bitfields, 
+    interfaces::{Writeable, Readable}
+};
+
+register_bitfields! {u64,
+    /// Hypervisor IPA Fault Address Register (EL2)
+    pub HPFAR_EL2 [
+        /// Bits [47:12] of the faulting intermediate physical address.
+        FIPA OFFSET(4) NUMBITS(36) []
+    ]
+}
+
+pub struct Reg;
+
+impl Readable for Reg {
+    type T = u64;
+    type R = HPFAR_EL2::Register;
+    sys_register_read_raw!(u64, "HPFAR_EL2", "x");
+}
+
+impl Writeable for Reg {
+    type T = u64;
+    type R = HPFAR_EL2::Register;
+    sys_register_write_raw!(u64, "HPFAR_EL2", "x");
+}
+
+pub const HPFAR_EL2: Reg = Reg {};
