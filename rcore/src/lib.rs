@@ -14,3 +14,9 @@ pub mod system;
 
 /// Cache related function implementation
 pub mod cache;
+
+/// performance monitor
+pub mod pmu;
+
+///
+pub mod debug; 

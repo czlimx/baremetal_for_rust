@@ -22,5 +22,9 @@ pub unsafe extern fn _early_init() -> i32 {
     rcore::cache::icache::invalidate_all();
     rcore::cache::dcache::flush_all();
     rcore::cache::dcache::flush_range(0x15, 128);
+
+    rcore::pmu::init();
+    rcore::pmu::cycle::enable();
+    rcore::pmu::event::enable(3);
     0
 }
