@@ -20,3 +20,6 @@ pub mod pmu;
 
 ///
 pub mod debug; 
+
+///
+pub mod counter;
